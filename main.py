@@ -6,16 +6,24 @@ def get_text_from_file():
     try:
         with open("girdi.txt", "r") as file:
             text = file.read().strip()  # Dosyadaki metni okur
-        return text
+            if not text:
+                print("girdi.txt dosyasında içerik bulunamadı!")
+            return text
     except FileNotFoundError:
         print("girdi.txt dosyası bulunamadı!")
+        return None
+    except Exception as e:
+        print(f"Dosya okuma hatası: {e}")
         return None
 
 def save_output(original_text, corrected_text):
     # Çıktılar.txt dosyasına kaydetme işlemi
-    with open("ciktilar.txt", "a") as file:
-        file.write(f"Orijinal Metin: {original_text}\n")
-        file.write(f"Düzeltilmiş Metin: {corrected_text}\n\n")
+    try:
+        with open("ciktilar.txt", "a") as file:
+            file.write(f"Orijinal Metin: {original_text}\n")
+            file.write(f"Düzeltilmiş Metin: {corrected_text}\n\n")
+    except Exception as e:
+        print(f"Çıktı kaydedilirken hata oluştu: {e}")
 
 def main():
     # Dosyadan metin alıyoruz
@@ -32,11 +40,7 @@ def main():
     # Yazım hatalarını kontrol ediyoruz
     corrected_text = check_spelling(text)
 
-    # Düzeltilmiş metni ekrana yazdırıyoruz
-    print("\nDüzeltilmiş Metin:")
-    print(corrected_text)
-
-    # Çıktıları dosyaya kaydediyoruz
+    # Çıktıları dosyaya kaydediyoruz (sadece düzeltmeyi kaydedeceğiz)
     save_output(text, corrected_text)
 
 if __name__ == "__main__":
