@@ -36,21 +36,22 @@ jobs:
 
       - name: Check ciktilar.txt for invalid content
         run: |
-          python -c '
+          python -c "
 import re
 
 def check_invalid_content(file_path):
-    invalid_pattern = re.compile(r"[0-9!@#$%^&*(),.?\":{}|<>]")
-    with open(file_path, "r") as file:
+    invalid_pattern = re.compile(r'[0-9!@#$%^&*(),.?\":{}|<>]')
+    with open(file_path, 'r') as file:
         lines = file.readlines()
     invalid_lines = []
     for i, line in enumerate(lines):
         if invalid_pattern.search(line):
             invalid_lines.append((i + 1, line.strip()))
     if invalid_lines:
-        raise Exception(f"Geçersiz içerik bulundu: {invalid_lines}")
+        raise Exception(f'Geçersiz içerik bulundu: {invalid_lines}')
           
-check_invalid_content("ciktilar.txt")'  # ciktilar.txt dosyasını kontrol ediyoruz
+check_invalid_content('ciktilar.txt')"
+        # ciktilar.txt dosyasını kontrol ediyoruz
 
       - name: Upload test results
         if: failure()  # Test başarısız olursa sonuçları yükle
