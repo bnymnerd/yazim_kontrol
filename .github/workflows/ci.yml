@@ -37,7 +37,7 @@ jobs:
       - name: Check ciktilar.txt for invalid content
         run: |
           python -c "
-import re
+
 
 def check_invalid_content(file_path):
     invalid_pattern = re.compile(r'[0-9!@#$%^&*(),.?\":{}|<>]')
