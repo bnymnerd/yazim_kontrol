@@ -20,8 +20,8 @@ def save_output(original_text, corrected_text):
     # Çıktılar.txt dosyasına kaydetme işlemi
     try:
         with open("ciktilar.txt", "a") as file:
-            file.write(f"Orijinal Metin: {original_text}\n")
-            file.write(f"Düzeltilmiş Metin: {corrected_text}\n\n")
+            file.write(f"Original Metin: {original_text}\n")
+            file.write(f"Duzeltilmis Metin: {corrected_text}\n\n")
     except Exception as e:
         print(f"Çıktı kaydedilirken hata oluştu: {e}")
 
