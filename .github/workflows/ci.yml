@@ -1,38 +1,41 @@
-name: Python Tests
+name: Python CI
 
 on:
   push:
     branches:
-      - main  # Ana dal üzerinde yapılan push işlemleri tetiklesin
+      - main   # Ana branch'ınıza göre düzenleyin
   pull_request:
     branches:
-      - main  # Ana dala yapılan PR'lar tetiklesin
+      - main   # Ana branch'ınıza göre düzenleyin
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Ubuntu üzerinde çalışacak
+    runs-on: ubuntu-latest  # CI işlemini çalıştırmak için kullanılan ortam
 
     steps:
-      # 1. Python'ı kurma
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'  # Python sürümünü belirtin, örneğin 3.9
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      # 2. Bağımlılıkları yükleme
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Python sürümünü burada belirtin
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r requirements.txt  # Gereksinimlerinizi yükler
 
-      # 3. Testleri çalıştırma
       - name: Run tests
         run: |
-          pytest --maxfail=1 --disable-warnings -q  # Testleri çalıştır
+          pytest --maxfail=1 --disable-warnings -q  # Testleri çalıştırır
 
-      # 4. Hata olması durumunda bildirim
-      - name: Upload Test Results (optional)
-        if: failure()  # Test başarısız olursa çalışır
+      - name: Check for invalid characters
         run: |
-          echo "Test failed. Check the logs for details."
-
+          invalid_lines=$(pytest test_yazim_kontrol.py | grep "Geçersiz içerik bulundu")
+          if [ ! -z "$invalid_lines" ]; then
+            echo "Hata: Geçersiz içerik tespit edildi: $invalid_lines"
+            exit 1  # Hata durumunda exit 1 ile işlemi başarısız yapar
+          else
+            echo "Testler başarılı!"
+          fi
