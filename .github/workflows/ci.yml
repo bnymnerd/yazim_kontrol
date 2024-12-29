@@ -1,42 +1,57 @@
-name: Python Tests
+name: CI Workflow
 
 on:
   push:
     branches:
-      - main  # Ana dalda (main) yapılan push işlemleri tetiklenir
-    paths:
-      - "girdi.txt"  # Sadece girdi.txt dosyasındaki değişikliklerde tetiklenir
+      - main
   pull_request:
     branches:
-      - main  # Main branch'e pull request yapıldığında tetiklenir
-    paths:
-      - "girdi.txt"  # Yalnızca girdi.txt dosyasına yapılan değişiklikler
+      - main
+
 jobs:
   test:
-    runs-on: ubuntu-latest  # GitHub Actions için Ubuntu ortamı
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v2  # Repository'i al
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'  # Python versiyonu belirleme
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip  # Pip'i güncelle
-        pip install -r requirements.txt  # Proje bağımlılıklarını yükle
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
 
-    - name: Run the Python script
-      run: |
-        python main.py  # main.py dosyasını çalıştır
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Commit the output (optional)
-      run: |
-        git config --global user.email "your-email@example.com"
-        git config --global user.name "your-github-username"
-        git add ciktilar.txt  # Çıktı dosyasını ekle
-        git commit -m "Update ciktilar.txt with corrected text"
-        git push origin main  # Güncellenmiş ciktilar.txt dosyasını tekrar GitHub'a gönder
+      - name: Create girdi.txt file
+        run: |
+          echo "Merhaba, bu bir deneme metnidir." > girdi.txt
+
+      - name: Run the Python program
+        run: |
+          python main.py
+
+      - name: Configure Git for GitHub Actions
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "Update ciktilar.txt with corrected text"
+          git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/bnymnerd/yazim_kontrol.git
+
+      - name: Check ciktilar.txt for invalid content
+        run: |
+          python check_invalid_content.py ciktilar.txt
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: ciktilar.txt
