@@ -39,3 +39,9 @@ jobs:
           else
             echo "Testler başarılı!"
           fi
+
+      - name: Test with pytest
+        env:
+          PYTHONIOENCODING: utf-8   # Python IO Encoding'i UTF-8 olarak ayarlıyoruz
+        run: |
+          pytest --maxfail=1 --disable-warnings -q  # Testleri çalıştırır
